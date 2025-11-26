@@ -26,11 +26,11 @@ public class HomeActivity extends AppCompatActivity {
 
         int itemId = item.getItemId();
         if (itemId == R.id.navigation_home) {
-            // selectedFragment = new HomeFragment();
+            selectedFragment = new HomeFragment();
         } else if (itemId == R.id.navigation_add) {
-            // selectedFragment = new AddPostFragment();
+            selectedFragment = new AddPostFragment();
         } else if (itemId == R.id.navigation_profile) {
-            // selectedFragment = new ProfileFragment();
+            selectedFragment = new ProfileFragment();
         }
 
         if (selectedFragment != null) {

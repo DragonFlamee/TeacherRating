@@ -1,130 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:background="#F5F7FA">
+    android:background="@drawable/login_background_gradient"
+    tools:context=".MainActivity">
 
-    <!-- 顶部装饰性边框 -->
-    <View
-        android:layout_width="120dp"
-        android:layout_height="4dp"
-        android:background="@color/primary_color"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp" />
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/ic_launcher_round" 
+        app:layout_constraintBottom_toTopOf="@+id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"/>
 
-    <!-- 登录卡片容器 -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="欢迎回来"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/material_dynamic_primary40"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        app:layout_constraintStart_toStartOf="@+id/cardView"
+        android:layout_marginBottom="24dp"/>
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        app:cardCornerRadius="28dp"
         app:cardElevation="8dp"
-        app:cardBackgroundColor="@android:color/white">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="32dp">
+            android:padding="24dp">
 
-            <!-- 标题 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="用户登录"
-                android:textSize="28sp"
-                android:textColor="@color/primary_color"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="32dp" />
-
-            <!-- 用户名输入框 -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilUsername"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxStrokeColor="@color/primary_color"
-                app:startIconDrawable="@drawable/ic_person"
-                app:startIconTint="@color/primary_color">
+                android:hint="用户名">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="用户名"
-                    android:singleLine="true" />
-
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 密码输入框 -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPassword"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxStrokeColor="@color/primary_color"
-                app:startIconDrawable="@drawable/ic_lock"
-                app:startIconTint="@color/primary_color">
+                android:layout_marginTop="16dp"
+                android:hint="密码"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="密码"
-                    android:inputType="textPassword"
-                    android:singleLine="true" />
-
+                    android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 登录按钮 -->
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
                 android:text="登录"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:cornerRadius="12dp"
-                app:backgroundTint="@color/primary_color"
-                android:layout_marginBottom="16dp"
-                android:stateListAnimator="@animator/button_scale"
-                app:rippleColor="@color/ripple_color" />
-
-            <!-- 注册按钮 -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGoToRegister"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="去注册"
-                android:textColor="@color/primary_color"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/primary_color"
-                app:strokeWidth="2dp"
-                android:stateListAnimator="@animator/button_scale"
-                app:rippleColor="@color/ripple_color"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
-    <!-- 底部装饰性边框 -->
-    <View
-        android:layout_width="120dp"
-        android:layout_height="4dp"
-        android:background="@color/primary_color"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp" />
+    <Button
+        android:id="@+id/btnGoToRegister"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="还没有账户？点击注册"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="@+id/cardView" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
