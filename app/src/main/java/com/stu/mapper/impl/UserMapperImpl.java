@@ -13,16 +13,14 @@ public class UserMapperImpl extends Database implements UserMapper {
     }
 
     public void insert(User user) {
-        System.out.println("0注册中.....");
-        String insertSql = "INSERT INTO userdata (id, username, password, nickname, phone_number) VALUES (?, ?, ?, ?, ?)";
+        // 修改SQL语句，不再插入id，让数据库自动生成
+        String insertSql = "INSERT INTO userdata (username, password, nickname, phone_number) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(insertSql)){
-            System.out.println("1注册中.....");
-            pstmt.setLong(1, user.getId());
-            pstmt.setString(2, user.getUsername());
-            pstmt.setString(3, user.getPassword());
-            pstmt.setString(4, user.getNickname());
-            pstmt.setString(5, user.getPhoneNumber());
-            System.out.println("注册中.....");
+            // 调整参数索引，从1开始，并且不再设置id
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getNickname());
+            pstmt.setString(4, user.getPhoneNumber());
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
