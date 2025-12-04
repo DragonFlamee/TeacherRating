@@ -3,8 +3,8 @@ package com.stu.mapper.impl;
 import java.sql.*;
 
 public class Database {
-    private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";  
-    private final String DB_URL = "jdbc:mysql://www.lhh-redbean.cn:3306/midterm-proj?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+    private final String DB_URL = "jdbc:mysql://www.lhh-redbean.cn:3306/midterm-proj?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&autoReconnect=true";
 
     // 数据库的用户名与密码，需要根据自己的设置
     private final String USER = "midterm-proj";

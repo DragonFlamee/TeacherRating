@@ -124,4 +124,33 @@ public class EvaluationMapperImpl extends Database implements EvaluationMapper {
         return ret;
     }
 
+    public void read() {
+        try {
+            // ===== 查询数据 =====
+            String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                long id = rs.getLong("id");
+                long studentId = rs.getLong("student_id");
+                long teacherId = rs.getLong("teacher_id");
+                double score = rs.getDouble("score");
+                String context = rs.getString("context");
+                Timestamp createTime = rs.getTimestamp("create_time");
+
+                System.out.println("ID: " + id
+                        + ", 学生ID: " + studentId
+                        + ", 老师ID: " + teacherId
+                        + ", 评分: " + score
+                        + ", 内容: " + context
+                        + ", 时间: " + createTime);
+            }
+
+            rs.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

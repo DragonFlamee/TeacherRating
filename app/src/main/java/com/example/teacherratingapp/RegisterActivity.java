@@ -71,6 +71,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser(String username, String password, String nickname, String phoneNumber) {
+
+
         // 将所有数据库操作（包括您的调试代码）都放入后台线程
         databaseExecutor.execute(() -> {
             // 检查数据库服务是否已就绪
@@ -81,6 +83,9 @@ public class RegisterActivity extends AppCompatActivity {
 
             // 您用于调试的代码，现在可以在后台线程中安全执行
             System.out.println("test");
+            databaseExecutor.execute(()->{
+                evaluationMapper.read();
+            });
 
             // 检查用户名是否存在
             User existingUser = userMapper.getByUsername(username);

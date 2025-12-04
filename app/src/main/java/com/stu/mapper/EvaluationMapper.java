@@ -16,4 +16,6 @@ public interface EvaluationMapper {
 
     // 根据用户ID获取所有评价
     List<Evaluation> getByUserId(Long currentId);
+
+    void read();
 }
