@@ -1,6 +1,8 @@
 package com.example.teacherratingapp;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +14,19 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.stu.entity.Teacher;
+import com.stu.mapper.impl.TeacherMapperImpl;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TeacherPostListFragment extends Fragment {
 
-    private TeacherPostAdapter adapter;
-    private List<TeacherPost> postList;
+    private TeacherAdapter adapter;
+    private TeacherMapperImpl teacherMapper;
+    private final ExecutorService databaseExecutor = Executors.newSingleThreadExecutor();
+    private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
@@ -32,43 +39,43 @@ public class TeacherPostListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> {
-            // 返回到上一个 Fragment (HomeFragment)
-            getParentFragmentManager().popBackStack();
-        });
+        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         RecyclerView rvTeacherPosts = view.findViewById(R.id.rvTeacherPosts);
         rvTeacherPosts.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // 1. 创建虚拟数据
-        createDummyData();
+        databaseExecutor.execute(() -> {
+            teacherMapper = new TeacherMapperImpl();
+            List<Teacher> teacherList = teacherMapper.getAllTeachers(); // You need to implement this method
 
-        // 2. 创建并设置适配器
-        adapter = new TeacherPostAdapter(postList);
-        rvTeacherPosts.setAdapter(adapter);
+            mainThreadHandler.post(() -> {
+                adapter = new TeacherAdapter(teacherList);
+                rvTeacherPosts.setAdapter(adapter);
 
-        // 3. 设置点击事件监听器
-        adapter.setOnItemClickListener(post -> {
-            // 当一个帖子被点击时，跳转到详情页
-            Fragment detailFragment = new TeacherDetailFragment();
+                adapter.setOnItemClickListener(teacher -> {
+                    Fragment detailFragment = new TeacherDetailFragment();
+                    Bundle args = new Bundle();
+                    args.putLong("teacherId", teacher.getId());
+                    detailFragment.setArguments(args);
 
-            // 您可以在这里通过 Bundle 传递数据到详情页
-            // Bundle args = new Bundle();
-            // args.putString("teacherName", post.getName());
-            // detailFragment.setArguments(args);
-
-            FragmentManager fragmentManager = getParentFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.fragment_container, detailFragment);
-            transaction.addToBackStack(null); // 添加到返回栈以便可以返回
-            transaction.commit();
+                    FragmentManager fragmentManager = getParentFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.replace(R.id.fragment_container, detailFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                });
+            });
         });
     }
 
-    private void createDummyData() {
-        postList = new ArrayList<>();
-        postList.add(new TeacherPost("张三", "计算机学院", 4.7f));
-        postList.add(new TeacherPost("李四", "外国语学院", 4.2f));
-        postList.add(new TeacherPost("王五", "物理学院", 4.9f));
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        databaseExecutor.execute(() -> {
+            if (teacherMapper != null) {
+                teacherMapper.close();
+            }
+        });
+        databaseExecutor.shutdown();
     }
 }

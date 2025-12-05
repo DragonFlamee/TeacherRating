@@ -14,29 +14,20 @@ public class EvaluationMapperImpl extends Database implements EvaluationMapper {
 
     public Evaluation getByStudentIdAndTeacherId(Long studentId, Long teacherId) {
         Evaluation ret = null;
-        try {
-            // ===== 查询数据 =====
-            String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation";
-            ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation WHERE student_id = ? AND teacher_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, studentId);
+            ps.setLong(2, teacherId);
+            ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
-                if (studentId == rs.getLong("student_id") 
-                 && teacherId == rs.getLong("teacher_id")) {
-                    long id = rs.getLong("id");
-                    double score = rs.getDouble("score");
-                    String context = rs.getString("context");
-                    Timestamp createTime = rs.getTimestamp("create_time");
-                    ret = new Evaluation(id, studentId, teacherId,
-                                         score, context, createTime);
-                }
-            }
-
-            if (ret == null) {
-                throw new IllegalArgumentException("No such evaluation");
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                double score = rs.getDouble("score");
+                String context = rs.getString("context");
+                Timestamp createTime = rs.getTimestamp("create_time");
+                ret = new Evaluation(id, studentId, teacherId, score, context, createTime);
             }
             rs.close();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,17 +35,14 @@ public class EvaluationMapperImpl extends Database implements EvaluationMapper {
     }
 
     public void insert(Evaluation evaluation) {
-        try {
-            String insertSql = "INSERT INTO evaluation (student_id, teacher_id, score, context) VALUES (?, ?, ?, ?)";
-            PreparedStatement pstmt = conn.prepareStatement(insertSql);
-            pstmt.setLong(1, evaluation.getId());
-            pstmt.setLong(2, evaluation.getStudentId());
-            pstmt.setLong(3, evaluation.getTeacherId());
-            pstmt.setDouble(4, evaluation.getScore());
-            pstmt.setString(5, evaluation.getContext());
-            pstmt.setTimestamp(6, evaluation.getCreateTime());
+        String insertSql = "INSERT INTO evaluation (student_id, teacher_id, score, context, create_time) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
+            pstmt.setLong(1, evaluation.getStudentId());
+            pstmt.setLong(2, evaluation.getTeacherId());
+            pstmt.setDouble(3, evaluation.getScore());
+            pstmt.setString(4, evaluation.getContext());
+            pstmt.setTimestamp(5, evaluation.getCreateTime());
             pstmt.executeUpdate();
-            pstmt.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,30 +50,21 @@ public class EvaluationMapperImpl extends Database implements EvaluationMapper {
 
     public List<Evaluation> getByTeacherId(Long teacherId) {
         List<Evaluation> ret = new ArrayList<>();
-        try {
-            // ===== 查询数据 =====
-            String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation";
-            ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation WHERE teacher_id = ? ORDER BY create_time DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setLong(1, teacherId);
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                if (teacherId == rs.getLong("teacher_id")) {
-                    long id = rs.getLong("id");
-                    long studentId = rs.getLong("student_id");
-                    double score = rs.getDouble("score");
-                    String context = rs.getString("context");
-                    Timestamp createTime = rs.getTimestamp("create_time");
-                    Evaluation data = new Evaluation(id, studentId, teacherId,
-                                                     score, context, createTime);
-                    ret.add(data);
-                }
-            }
-
-            if (ret.isEmpty()) {
-                throw new IllegalArgumentException("No such evaluation");
+                long id = rs.getLong("id");
+                long studentId = rs.getLong("student_id");
+                double score = rs.getDouble("score");
+                String context = rs.getString("context");
+                Timestamp createTime = rs.getTimestamp("create_time");
+                Evaluation data = new Evaluation(id, studentId, teacherId, score, context, createTime);
+                ret.add(data);
             }
             rs.close();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,63 +73,24 @@ public class EvaluationMapperImpl extends Database implements EvaluationMapper {
 
     public List<Evaluation> getByUserId(Long currentId) {
         List<Evaluation> ret = new ArrayList<>();
-        try {
-            // ===== 查询数据 =====
-            String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation";
-            ResultSet rs = stmt.executeQuery(sql);
+        String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation WHERE student_id = ?";
+         try (PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setLong(1, currentId);
+            ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                if (currentId == rs.getLong("student_id")) {
-                    long id = rs.getLong("id");
-                    long teacherId = rs.getLong("teacher_id");
-                    double score = rs.getDouble("score");
-                    String context = rs.getString("context");
-                    Timestamp createTime = rs.getTimestamp("create_time");
-                    Evaluation data = new Evaluation(id, currentId, teacherId,
-                                                     score, context, createTime);
-                    ret.add(data);
-                }
-            }
-
-            if (ret.isEmpty()) {
-                throw new IllegalArgumentException("No such evaluation ");
+                long id = rs.getLong("id");
+                long teacherId = rs.getLong("teacher_id");
+                double score = rs.getDouble("score");
+                String context = rs.getString("context");
+                Timestamp createTime = rs.getTimestamp("create_time");
+                Evaluation data = new Evaluation(id, currentId, teacherId, score, context, createTime);
+                ret.add(data);
             }
             rs.close();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return ret;
     }
-
-    public void read() {
-        try {
-            // ===== 查询数据 =====
-            String sql = "SELECT id, student_id, teacher_id, score, context, create_time FROM evaluation";
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                long id = rs.getLong("id");
-                long studentId = rs.getLong("student_id");
-                long teacherId = rs.getLong("teacher_id");
-                double score = rs.getDouble("score");
-                String context = rs.getString("context");
-                Timestamp createTime = rs.getTimestamp("create_time");
-
-                System.out.println("ID: " + id
-                        + ", 学生ID: " + studentId
-                        + ", 老师ID: " + teacherId
-                        + ", 评分: " + score
-                        + ", 内容: " + context
-                        + ", 时间: " + createTime);
-            }
-
-            rs.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

@@ -1,6 +1,8 @@
 package com.stu.mapper.impl;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.stu.entity.Teacher;
 import com.stu.mapper.TeacherMapper;
@@ -103,5 +105,26 @@ public class TeacherMapperImpl extends Database implements TeacherMapper {
             e.printStackTrace();
         }
         return ret;
+    }
+
+    public List<Teacher> getAllTeachers() {
+        List<Teacher> teachers = new ArrayList<>();
+        try {
+            String sql = "SELECT id, name, title, department, research_area FROM teacher";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Long id = rs.getLong("id");
+                String name = rs.getString("name");
+                String title = rs.getString("title");
+                String department = rs.getString("department");
+                String research_area = rs.getString("research_area");
+                teachers.add(new Teacher(id, name, title, department, research_area));
+            }
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return teachers;
     }
 }
