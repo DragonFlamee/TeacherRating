@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,8 +26,19 @@ public class TeacherPostListFragment extends Fragment {
 
     private TeacherAdapter adapter;
     private TeacherMapperImpl teacherMapper;
+    private RecyclerView rvTeacherPosts;
     private final ExecutorService databaseExecutor = Executors.newSingleThreadExecutor();
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Listen for the result from AddPostFragment
+        getParentFragmentManager().setFragmentResultListener("teacher_added_request", this, (requestKey, bundle) -> {
+            // Reload the teacher list
+            loadTeachers();
+        });
+    }
 
     @Nullable
     @Override
@@ -41,12 +53,16 @@ public class TeacherPostListFragment extends Fragment {
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        RecyclerView rvTeacherPosts = view.findViewById(R.id.rvTeacherPosts);
+        rvTeacherPosts = view.findViewById(R.id.rvTeacherPosts);
         rvTeacherPosts.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        loadTeachers();
+    }
+
+    private void loadTeachers() {
         databaseExecutor.execute(() -> {
             teacherMapper = new TeacherMapperImpl();
-            List<Teacher> teacherList = teacherMapper.getAllTeachers(); // You need to implement this method
+            List<Teacher> teacherList = teacherMapper.getAllTeachers();
 
             mainThreadHandler.post(() -> {
                 adapter = new TeacherAdapter(teacherList);

@@ -81,8 +81,10 @@ public class AddPostFragment extends Fragment {
 
                 mainThreadHandler.post(() -> {
                     Toast.makeText(getContext(), "教师添加成功", Toast.LENGTH_SHORT).show();
-                    // Navigate back to the previous screen
-                    getParentFragmentManager().popBackStack();
+                    // Navigate to the Home page
+                    if (getActivity() instanceof HomeActivity) {
+                        ((HomeActivity) getActivity()).refreshHomeFragment();
+                    }
                 });
 
             } catch (Exception e) {

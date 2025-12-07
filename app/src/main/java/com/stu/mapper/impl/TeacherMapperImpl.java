@@ -13,16 +13,13 @@ public class TeacherMapperImpl extends Database implements TeacherMapper {
     }
 
     public void insert(Teacher teacher) {
-        try {
-            String insertSql = "INSERT INTO teacher (id, name, title, department, research_area) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement pstmt = conn.prepareStatement(insertSql);
-            pstmt.setLong(1, teacher.getId());
-            pstmt.setString(2, teacher.getName());
-            pstmt.setString(3, teacher.getTitle());
-            pstmt.setString(4, teacher.getDepartment());
-            pstmt.setString(5, teacher.getResearchArea());
+        String insertSql = "INSERT INTO teacher (name, title, department, research_area) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
+            pstmt.setString(1, teacher.getName());
+            pstmt.setString(2, teacher.getTitle());
+            pstmt.setString(3, teacher.getDepartment());
+            pstmt.setString(4, teacher.getResearchArea());
             pstmt.executeUpdate();
-            pstmt.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,34 +74,22 @@ public class TeacherMapperImpl extends Database implements TeacherMapper {
     }
 
     public Teacher getByName(String name) {
-        Teacher ret = null;
-        try {
-            // ===== 查询数据 =====
-            String sql = "SELECT id, name, title, department, research_area FROM teacher";
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                if (name.equals(rs.getString("name"))) {
+        String sql = "SELECT id, name, title, department, research_area FROM teacher WHERE name = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
                     Long id = rs.getLong("id");
                     String title = rs.getString("title");
                     String department = rs.getString("department");
                     String research_area = rs.getString("research_area");
-                    ret = new Teacher(id, name, title,
-                                      department, research_area);
-                    break;
+                    return new Teacher(id, name, title, department, research_area);
                 }
             }
-
-            if (ret == null) {
-                throw new IllegalArgumentException("No such teacher");
-            }
-            rs.close();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return ret;
+        return null;
     }
 
     public List<Teacher> getAllTeachers() {
